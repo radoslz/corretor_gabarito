@@ -188,6 +188,9 @@ def correction_select_student_view(request, application_id):
         pk=application_id,
     )
     students = exam_application.class_group.students.filter(is_active=True).order_by("name")
+    corrected_student_ids = set(
+        StudentExamResult.objects.filter(exam_application=exam_application).values_list("student_id", flat=True)
+    )
 
     return render(
         request,
@@ -196,6 +199,7 @@ def correction_select_student_view(request, application_id):
             "exam_application": exam_application,
             "exam": exam_application.exam,
             "students": students,
+            "corrected_student_ids": corrected_student_ids,
         },
     )
 
@@ -285,6 +289,8 @@ def correction_student_view(request, application_id, student_id):
         result.save()
 
         messages.success(request, f"Correcao de {student.name} salva com sucesso.")
+        if action == "save_and_back" or not action:
+            return redirect("exams:correction_select_student", application_id=exam_application.pk)
         return redirect("exams:correction_student", application_id=exam_application.pk, student_id=student.pk)
 
     answers_map = {answer.question_number: answer.is_correct for answer in result.answers.all()}

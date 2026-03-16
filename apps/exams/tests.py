@@ -86,3 +86,56 @@ class ExamReportViewTests(TestCase):
         self.assertContains(response, self.student_a.name)
         self.assertNotContains(response, self.student_b.name)
         self.assertEqual(response.context["selected_application"], self.application_a)
+
+
+class CorrectionFlowTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="tester", password="123456")
+        self.client.force_login(self.user)
+
+        self.school = School.objects.create(name="Escola A")
+        self.class_group = ClassGroup.objects.create(
+            school=self.school,
+            name="1A",
+            grade_level="1EM",
+            shift="matutino",
+            school_year=2026,
+            responsible_teacher=self.user,
+        )
+        self.student = Student.objects.create(class_group=self.class_group, name="Ana")
+        self.exam = Exam.objects.create(
+            title="Diagnostica",
+            subject="matematica",
+            application_date="2026-03-10",
+            question_count=2,
+            max_score=Decimal("10.00"),
+            created_by=self.user,
+        )
+        self.application = ExamApplication.objects.create(exam=self.exam, class_group=self.class_group)
+
+    def test_save_and_back_redirects_to_student_selection(self):
+        response = self.client.post(
+            reverse("exams:correction_student", args=[self.application.pk, self.student.pk]),
+            {
+                "action": "save_and_back",
+                "question_1": "1",
+                "question_2": "0",
+            },
+        )
+
+        self.assertRedirects(response, reverse("exams:correction_select_student", args=[self.application.pk]))
+
+    def test_student_selection_marks_corrected_students(self):
+        StudentExamResult.objects.create(
+            exam_application=self.application,
+            student=self.student,
+            total_correct=1,
+            score=Decimal("5.00"),
+            percentage=Decimal("50.00"),
+            corrected_by=self.user,
+        )
+
+        response = self.client.get(reverse("exams:correction_select_student", args=[self.application.pk]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Corrigido")

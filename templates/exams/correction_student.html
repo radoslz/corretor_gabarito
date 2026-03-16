@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% load exam_extras %}
 
-{% block title %}Correção | {{ student.name }}{% endblock %}
-{% block page_title %}Correção individual{% endblock %}
-{% block page_subtitle %}Marque as questões corretas de {{ student.name }}{% endblock %}
+{% block title %}Correcao | {{ student.name }}{% endblock %}
+{% block page_title %}Correcao individual{% endblock %}
+{% block page_subtitle %}Marque as questoes corretas de {{ student.name }}{% endblock %}
 
 {% block content %}
 <div class="card">
@@ -11,7 +11,7 @@
         <div>
             <h3>{{ exam.title }}</h3>
             <p class="topbar__subtitle">
-                {{ exam_application.class_group.name }} • {{ student.name }}
+                {{ exam_application.class_group.name }} - {{ student.name }}
             </p>
         </div>
         <a href="{% url 'exams:correction_select_student' exam_application.pk %}" class="btn btn--secondary">
@@ -29,8 +29,8 @@
             <button type="submit" name="action" value="clear_all" class="btn btn--secondary">
                 Limpar tudo
             </button>
-            <button type="submit" class="btn btn--primary">
-                Salvar correção
+            <button type="submit" name="action" value="save_and_back" class="btn btn--primary">
+                Salvar correcao
             </button>
         </div>
 
@@ -41,10 +41,10 @@
                     class="question-card js-question-card {% if answers_map|get_item:question_number %}question-card--correct{% endif %}"
                     data-input-id="question_{{ question_number }}"
                 >
-                    <span class="question-card__title">Questão {{ question_number }}</span>
+                    <span class="question-card__title">Questao {{ question_number }}</span>
                     <span class="question-card__subtitle">Clique para alternar 0/1</span>
                     <span class="question-card__status">
-                        {% if answers_map|get_item:question_number %}✓ Acertou{% else %}✗ Errou{% endif %}
+                        {% if answers_map|get_item:question_number %}Acertou{% else %}Errou{% endif %}
                     </span>
                 </button>
 
@@ -55,6 +55,15 @@
                     value="{% if answers_map|get_item:question_number %}1{% else %}0{% endif %}"
                 >
             {% endfor %}
+        </div>
+
+        <div class="quick-actions">
+            <button type="submit" name="action" value="save_and_back" class="btn btn--primary">
+                Salvar correcao
+            </button>
+            <a href="{% url 'exams:correction_select_student' exam_application.pk %}" class="btn btn--secondary">
+                Cancelar
+            </a>
         </div>
     </form>
 </div>

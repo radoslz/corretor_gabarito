@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}Correção | {{ exam.title }}{% endblock %}
-{% block page_title %}Correção da prova{% endblock %}
+{% block title %}Correcao | {{ exam.title }}{% endblock %}
+{% block page_title %}Correcao da prova{% endblock %}
 {% block page_subtitle %}Selecione um aluno da turma {{ exam_application.class_group.name }}{% endblock %}
 
 {% block content %}
@@ -10,10 +10,10 @@
         <div>
             <h3>{{ exam.title }}</h3>
             <p class="topbar__subtitle">
-                {{ exam_application.class_group.name }} • {{ exam_application.class_group.get_grade_level_display }}
+                {{ exam_application.class_group.name }} - {{ exam_application.class_group.get_grade_level_display }}
             </p>
         </div>
-        <a href="{% url 'exams:exam_report' exam.pk %}" class="btn btn--secondary">Ver relatório</a>
+        <a href="{% url 'exams:exam_report' exam.pk %}?application_id={{ exam_application.pk }}" class="btn btn--secondary">Ver relatorio</a>
     </div>
 
     <div class="table-wrapper">
@@ -22,7 +22,8 @@
                 <tr>
                     <th>Aluno</th>
                     <th>Turma</th>
-                    <th>Ação</th>
+                    <th>Status</th>
+                    <th>Acao</th>
                 </tr>
             </thead>
             <tbody>
@@ -31,14 +32,21 @@
                         <td>{{ student.name }}</td>
                         <td>{{ exam_application.class_group.name }}</td>
                         <td>
+                            {% if student.pk in corrected_student_ids %}
+                                Corrigido
+                            {% else %}
+                                Pendente
+                            {% endif %}
+                        </td>
+                        <td>
                             <a href="{% url 'exams:correction_student' exam_application.pk student.pk %}" class="btn btn--primary">
-                                Corrigir
+                                {% if student.pk in corrected_student_ids %}Revisar{% else %}Corrigir{% endif %}
                             </a>
                         </td>
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="3">Nenhum aluno ativo nessa turma.</td>
+                        <td colspan="4">Nenhum aluno ativo nessa turma.</td>
                     </tr>
                 {% endfor %}
             </tbody>
