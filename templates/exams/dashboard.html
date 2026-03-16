@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio | Corretor de Gabarito{% endblock %}
+{% block page_title %}Inicio{% endblock %}
+{% block page_subtitle %}Resumo geral do sistema e das avaliacoes recentes{% endblock %}
+
+{% block content %}
+<div class="grid grid--3">
+    <div class="card stat-card">
+        <span class="stat-card__label">Total de provas</span>
+        <strong class="stat-card__value">{{ total_exams }}</strong>
+    </div>
+    <div class="card stat-card">
+        <span class="stat-card__label">Resultados lancados</span>
+        <strong class="stat-card__value">{{ total_results }}</strong>
+    </div>
+    <div class="card stat-card">
+        <span class="stat-card__label">Turmas cadastradas</span>
+        <strong class="stat-card__value">{{ total_class_groups }}</strong>
+    </div>
+</div>
+
+<div class="grid grid--2">
+    <div class="card">
+        <div class="card__header">
+            <h3>Desempenho geral</h3>
+        </div>
+        <div class="metrics-list">
+            <div class="metric-row">
+                <span>Media de notas</span>
+                <strong>{{ performance_summary.average_score|default:'0.00' }}</strong>
+            </div>
+            <div class="metric-row">
+                <span>Maior nota</span>
+                <strong>{{ performance_summary.highest_score|default:'0.00' }}</strong>
+            </div>
+            <div class="metric-row">
+                <span>Menor nota</span>
+                <strong>{{ performance_summary.lowest_score|default:'0.00' }}</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card__header">
+            <h3>Acoes rapidas</h3>
+        </div>
+        <div class="quick-actions">
+            <a class="btn btn--primary" href="{% url 'exams:exam_create' %}">Nova prova</a>
+            <a class="btn btn--secondary" href="{% url 'schools:classgroup_create' %}">Nova turma</a>
+            <a class="btn btn--secondary" href="{% url 'schools:student_list' %}">Ver alunos</a>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card__header">
+        <h3>Ultimas provas cadastradas</h3>
+    </div>
+    <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Titulo</th>
+                    <th>Data</th>
+                    <th>Questoes</th>
+                    <th>Aplicacoes</th>
+                    <th>Acoes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exam in latest_exams %}
+                    <tr>
+                        <td>{{ exam.title }}</td>
+                        <td>{{ exam.application_date|date:'d/m/Y' }}</td>
+                        <td>{{ exam.question_count }}</td>
+                        <td>{{ exam.applications.count }}</td>
+                        <td>
+                            <a href="{% url 'exams:exam_application_manage' exam.pk %}">Aplicacoes</a> |
+                            <a href="{% url 'exams:exam_report' exam.pk %}">Relatorio</a> |
+                            <a href="{% url 'exams:export_exam_results_excel' exam.pk %}">Excel alunos</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5">Nenhuma prova cadastrada ainda.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

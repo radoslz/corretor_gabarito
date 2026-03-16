@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} | Corretor de Gabarito{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block page_subtitle %}Defina o gabarito oficial da prova{% endblock %}
+
+{% block content %}
+<div class="card">
+    <form method="post" class="form-stack">
+        {% csrf_token %}
+        {{ formset.management_form }}
+
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Questão</th>
+                        <th>Alternativa correta</th>
+                        <th>Peso</th>
+                        <th>Excluir</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for form in formset %}
+                        <tr>
+                            <td>
+                                {{ form.id }}
+                                {{ form.question_number }}
+                            </td>
+                            <td>{{ form.correct_alternative }}</td>
+                            <td>{{ form.weight }}</td>
+                            <td>
+                                {% if formset.can_delete %}
+                                    {{ form.DELETE }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="quick-actions">
+            <button type="submit" class="btn btn--primary">Salvar gabarito</button>
+            <a href="{% url 'exams:exam_list' %}" class="btn btn--secondary">Voltar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

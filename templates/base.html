@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Corretor de Gabarito{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=3">
+    <script defer src="{% static 'js/main.js' %}?v=3"></script>
+</head>
+<body>
+    <div class="app-shell">
+        {% if request.user.is_authenticated %}
+            <header class="app-header">
+                <div class="app-header__brand">
+                    <h2>Corretor</h2>
+                    <p>Sistema pedagogico</p>
+                </div>
+
+                <nav class="app-nav">
+                    <a href="{% url 'exams:dashboard' %}" class="app-nav__link">Inicio</a>
+                    <a href="{% url 'schools:school_list' %}" class="app-nav__link">Escolas</a>
+                    <a href="{% url 'schools:classgroup_list' %}" class="app-nav__link">Turmas</a>
+                    <a href="{% url 'schools:student_list' %}" class="app-nav__link">Alunos</a>
+                    <a href="{% url 'exams:exam_list' %}" class="app-nav__link">Provas</a>
+                    <a href="/admin/" class="app-nav__link">Administracao</a>
+                </nav>
+
+                <div class="app-header__actions">
+                    <button type="button" class="theme-toggle" id="themeToggle">Alternar tema</button>
+                    <div class="app-header__user">
+                        <span>{{ request.user.get_full_name|default:request.user.username }}</span>
+                        <a href="{% url 'accounts:logout' %}" class="app-header__logout">Sair</a>
+                    </div>
+                </div>
+            </header>
+        {% endif %}
+
+        <main class="main-content {% if not request.user.is_authenticated %}main-content--full{% endif %}">
+            {% if request.user.is_authenticated %}
+                <header class="topbar">
+                    <div>
+                        <h1 class="topbar__title">{% block page_title %}Painel{% endblock %}</h1>
+                        <p class="topbar__subtitle">{% block page_subtitle %}Acompanhe e gerencie suas avaliacoes{% endblock %}</p>
+                    </div>
+                </header>
+            {% endif %}
+
+            {% include 'partials/messages.html' %}
+
+            <section class="page-content">
+                {% block content %}{% endblock %}
+            </section>
+        </main>
+    </div>
+</body>
+</html>

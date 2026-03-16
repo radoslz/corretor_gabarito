@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Alunos | Corretor de Gabarito{% endblock %}
+{% block page_title %}Alunos{% endblock %}
+{% block page_subtitle %}Visualize todos os alunos e filtre por escola, ano letivo e turma{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card__header">
+        <h3>Filtros</h3>
+        <div class="quick-actions">
+            <a href="{% url 'schools:student_list' %}" class="btn btn--secondary">Limpar filtros</a>
+        </div>
+    </div>
+
+    <form method="get" class="filters-grid">
+        <div>
+            <label for="filterSchool">Escola</label>
+            <select name="school" id="filterSchool" class="form-select">
+                <option value="">Todas</option>
+                {% for school in schools %}
+                    <option value="{{ school.pk }}" {% if selected_school_id == school.pk|stringformat:'s' %}selected{% endif %}>{{ school.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="filterYear">Ano letivo</label>
+            <select name="school_year" id="filterYear" class="form-select">
+                <option value="">Todos</option>
+                {% for school_year in school_years %}
+                    <option value="{{ school_year }}" {% if selected_school_year == school_year|stringformat:'s' %}selected{% endif %}>{{ school_year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="filterClassGroup">Turma</label>
+            <select name="class_group" id="filterClassGroup" class="form-select">
+                <option value="">Todas</option>
+                {% for class_group in class_groups %}
+                    <option value="{{ class_group.pk }}" {% if selected_class_group_id == class_group.pk|stringformat:'s' %}selected{% endif %}>
+                        {{ class_group.name }} - {{ class_group.school.name }} ({{ class_group.school_year }})
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="quick-actions">
+            <button type="submit" class="btn btn--primary">Filtrar</button>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <div class="card__header">
+        <h3>Lista de alunos</h3>
+        <div class="quick-actions">
+            <a href="{% url 'schools:student_create' %}" class="btn btn--primary">Novo aluno</a>
+            <a href="{% url 'schools:student_import' %}" class="btn btn--secondary">Importar CSV</a>
+        </div>
+    </div>
+    <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Escola</th>
+                    <th>Turma</th>
+                    <th>Ano</th>
+                    <th>Matricula</th>
+                    <th>Status</th>
+                    <th>Acoes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                    <tr>
+                        <td>{{ student.name }}</td>
+                        <td>{{ student.class_group.school.name }}</td>
+                        <td>{{ student.class_group.name }}</td>
+                        <td>{{ student.class_group.school_year }}</td>
+                        <td>{{ student.registration_number|default:'-' }}</td>
+                        <td>{% if student.is_active %}Ativo{% else %}Inativo{% endif %}</td>
+                        <td><a href="{% url 'schools:student_update' student.pk %}">Editar</a></td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7">Nenhum aluno cadastrado.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

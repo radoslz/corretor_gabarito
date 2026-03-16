@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}Relatorio | {{ exam.title }}{% endblock %}
+{% block page_title %}Relatorio da prova{% endblock %}
+{% block page_subtitle %}{% if selected_application %}Analise da turma {{ selected_application.class_group.name }} nesta prova{% else %}Analise de desempenho da prova em todas as turmas associadas{% endif %}{% endblock %}
+
+{% block content %}
+<div class="quick-actions">
+    <a href="{% url 'exams:export_exam_results_excel' exam.pk %}{% if selected_application %}?application_id={{ selected_application.pk }}{% endif %}" class="btn btn--primary">
+        {% if selected_application %}Exportar Excel da turma{% else %}Exportar Excel detalhado{% endif %}
+    </a>
+    <a href="{% url 'exams:export_exam_summary_excel' exam.pk %}{% if selected_application %}?application_id={{ selected_application.pk }}{% endif %}" class="btn btn--secondary">
+        {% if selected_application %}Exportar resumo da turma{% else %}Exportar resumo por questao{% endif %}
+    </a>
+    {% if selected_application %}
+        <a href="{% url 'exams:exam_report' exam.pk %}" class="btn btn--secondary">Voltar para visao geral</a>
+    {% endif %}
+</div>
+
+<div class="grid grid--2">
+    <div class="card">
+        <h3>Informacoes gerais</h3>
+        <div class="metrics-list">
+            <div class="metric-row"><span>Prova</span><strong>{{ exam.title }}</strong></div>
+            <div class="metric-row"><span>Disciplina</span><strong>{{ exam.get_subject_display }}</strong></div>
+            <div class="metric-row"><span>Data</span><strong>{{ exam.application_date|date:'d/m/Y' }}</strong></div>
+            <div class="metric-row"><span>Questoes</span><strong>{{ exam.question_count }}</strong></div>
+            <div class="metric-row"><span>Turmas associadas</span><strong>{{ applications.count }}</strong></div>
+            <div class="metric-row">
+                <span>Modo do relatorio</span>
+                <strong>{% if selected_application %}Turma {{ selected_application.class_group.name }}{% else %}Todas as turmas{% endif %}</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Resumo do recorte atual</h3>
+        <div class="metrics-list">
+            <div class="metric-row"><span>Alunos com resultado</span><strong>{{ result_count }}</strong></div>
+            <div class="metric-row"><span>Media da nota</span><strong>{{ result_summary.average_score|default:'-' }}</strong></div>
+            <div class="metric-row"><span>Maior nota</span><strong>{{ result_summary.highest_score|default:'-' }}</strong></div>
+            <div class="metric-row"><span>Menor nota</span><strong>{{ result_summary.lowest_score|default:'-' }}</strong></div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card__header">
+        <h3>Turmas associadas</h3>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Turma</th>
+                    <th>Serie</th>
+                    <th>Ano letivo</th>
+                    <th>Resultados</th>
+                    <th>Media</th>
+                    <th>Acoes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in application_summaries %}
+                    <tr>
+                        <td>
+                            {{ item.application.class_group.name }}
+                            {% if selected_application and selected_application.pk == item.application.pk %}
+                                <strong>(selecionada)</strong>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.application.class_group.get_grade_level_display }}</td>
+                        <td>{{ item.application.class_group.school_year }}</td>
+                        <td>{{ item.student_count }}</td>
+                        <td>{{ item.average_score|default:'-' }}</td>
+                        <td>
+                            <a href="{% url 'exams:exam_report' exam.pk %}?application_id={{ item.application.pk }}">Ver relatorio</a>
+                            |
+                            <a href="{% url 'exams:correction_select_student' item.application.pk %}">Corrigir turma</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6">Nenhuma turma associada.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card__header">
+        <h3>Resultados por aluno</h3>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Turma</th>
+                    <th>Aluno</th>
+                    <th>Acertos</th>
+                    <th>Nota</th>
+                    <th>Percentual</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                    <tr>
+                        <td>{{ result.exam_application.class_group.name }}</td>
+                        <td>{{ result.student.name }}</td>
+                        <td>{{ result.total_correct }}</td>
+                        <td>{{ result.score }}</td>
+                        <td>{{ result.percentage }}%</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5">Nenhum resultado lancado ainda.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="grid grid--2">
+    <div class="card">
+        <h3>Questoes mais dificeis</h3>
+        <div class="metrics-list">
+            {% for item in ordered_difficulty|slice:':5' %}
+                <div class="metric-row">
+                    <span>Questao {{ item.question_number }}</span>
+                    <strong>{{ item.difficulty }}%</strong>
+                </div>
+            {% empty %}
+                <p>Nenhum dado disponivel.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card__header">
+            <h3>Dificuldade por questao</h3>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Questao</th>
+                        <th>Acertos</th>
+                        <th>% de acerto</th>
+                        <th>% de dificuldade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in difficulty_data %}
+                        <tr>
+                            <td>Q{{ item.question_number }}</td>
+                            <td>{{ item.correct_count }}</td>
+                            <td>{{ item.accuracy }}%</td>
+                            <td>{{ item.difficulty }}%</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4">Nenhum dado disponivel.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

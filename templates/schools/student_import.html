@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Importar alunos | Corretor de Gabarito{% endblock %}
+{% block page_title %}Importar alunos{% endblock %}
+{% block page_subtitle %}{% if selected_class_group %}Envie um arquivo CSV ou TXT para a turma {{ selected_class_group.name }}{% else %}Envie um arquivo CSV ou TXT para cadastro em lote{% endif %}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <form method="post" enctype="multipart/form-data" class="form-stack">
+        {% csrf_token %}
+        {% if next_url %}
+            <input type="hidden" name="next" value="{{ next_url }}">
+        {% endif %}
+        {{ form.as_p }}
+        <div class="quick-actions">
+            <button type="submit" class="btn btn--primary">Importar</button>
+            <a href="{% if next_url %}{{ next_url }}{% else %}{% url 'schools:student_list' %}{% endif %}" class="btn btn--secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

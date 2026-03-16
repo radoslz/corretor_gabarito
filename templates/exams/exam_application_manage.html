@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} | Corretor de Gabarito{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block page_subtitle %}Associe a prova a uma ou mais turmas{% endblock %}
+
+{% block content %}
+<div class="grid grid--2">
+    <div class="card">
+        <h3>Informações da prova</h3>
+        <div class="metrics-list">
+            <div class="metric-row"><span>Título</span><strong>{{ exam.title }}</strong></div>
+            <div class="metric-row"><span>Disciplina</span><strong>{{ exam.get_subject_display }}</strong></div>
+            <div class="metric-row"><span>Data</span><strong>{{ exam.application_date|date:'d/m/Y' }}</strong></div>
+            <div class="metric-row"><span>Questões</span><strong>{{ exam.question_count }}</strong></div>
+            <div class="metric-row"><span>Nota máxima</span><strong>{{ exam.max_score }}</strong></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Associar turmas</h3>
+        <form method="post" class="form-stack">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <div class="quick-actions">
+                <button type="submit" class="btn btn--primary">Associar turmas</button>
+                <a href="{% url 'exams:exam_list' %}" class="btn btn--secondary">Voltar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card__header">
+        <h3>Turmas já associadas</h3>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Turma</th>
+                    <th>Série</th>
+                    <th>Ano letivo</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for application in applications %}
+                    <tr>
+                        <td>{{ application.class_group.name }}</td>
+                        <td>{{ application.class_group.get_grade_level_display }}</td>
+                        <td>{{ application.class_group.school_year }}</td>
+                        <td>{% if application.is_active %}Ativa{% else %}Inativa{% endif %}</td>
+                        <td>
+                            <a href="{% url 'exams:correction_select_student' application.pk %}">Corrigir turma</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5">Nenhuma turma associada ainda.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Provas | Corretor de Gabarito{% endblock %}
+{% block page_title %}Provas{% endblock %}
+{% block page_subtitle %}Gerencie avaliações, aplicações, correções e relatórios{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card__header">
+        <h3>Lista de provas</h3>
+        <a href="{% url 'exams:exam_create' %}" class="btn btn--primary">Nova prova</a>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Disciplina</th>
+                    <th>Data</th>
+                    <th>Questões</th>
+                    <th>Aplicações</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exam in exams %}
+                    <tr>
+                        <td>{{ exam.title }}</td>
+                        <td>{{ exam.get_subject_display }}</td>
+                        <td>{{ exam.application_date|date:'d/m/Y' }}</td>
+                        <td>{{ exam.question_count }}</td>
+                        <td>{{ exam.applications.count }}</td>
+                        <td>
+                            <a href="{% url 'exams:exam_update' exam.pk %}">Editar</a> |
+                            <a href="{% url 'exams:exam_application_manage' exam.pk %}">Aplicações</a> |
+                            <a href="{% url 'exams:exam_report' exam.pk %}">Relatório</a> |
+                            <a href="{% url 'exams:export_exam_results_excel' exam.pk %}">Excel alunos</a> |
+                            <a href="{% url 'exams:export_exam_summary_excel' exam.pk %}">Excel questões</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6">Nenhuma prova cadastrada.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

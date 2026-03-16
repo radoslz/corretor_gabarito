@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} | Corretor de Gabarito{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block page_subtitle %}Cadastre uma nova prova{% endblock %}
+
+{% block content %}
+<div class="card">
+    <form method="post" class="form-stack">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div class="quick-actions">
+            <button type="submit" class="btn btn--primary">Salvar e associar turmas</button>
+            <a href="{% url 'exams:exam_list' %}" class="btn btn--secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

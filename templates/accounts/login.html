@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar | Corretor de Gabarito</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="auth-page">
+    <main class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-card__header">
+                <h1>Entrar no sistema</h1>
+                <p>Use suas credenciais para acessar o painel de correção e relatórios.</p>
+            </div>
+
+            <form method="post" class="form-stack">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="message message--error">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div>
+                    <label for="id_username">Usuário</label>
+                    <input type="text" name="username" id="id_username" class="form-control" required>
+                </div>
+
+                <div>
+                    <label for="id_password">Senha</label>
+                    <input type="password" name="password" id="id_password" class="form-control" required>
+                </div>
+
+                <button type="submit" class="btn btn--primary btn--block">Entrar</button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

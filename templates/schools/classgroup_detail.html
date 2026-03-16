@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ class_group.name }} | Corretor de Gabarito{% endblock %}
+{% block page_title %}{{ class_group.name }}{% endblock %}
+{% block page_subtitle %}Detalhes da turma e lista de alunos{% endblock %}
+
+{% block content %}
+<div class="grid grid--2">
+    <div class="card">
+        <div class="card__header">
+            <h3>Informacoes da turma</h3>
+            <a href="{% url 'schools:classgroup_update' class_group.pk %}" class="btn btn--secondary">Editar turma</a>
+        </div>
+        <div class="metrics-list">
+            <div class="metric-row"><span>Escola</span><strong>{{ class_group.school.name }}</strong></div>
+            <div class="metric-row"><span>Serie</span><strong>{{ class_group.get_grade_level_display }}</strong></div>
+            <div class="metric-row"><span>Turno</span><strong>{{ class_group.get_shift_display }}</strong></div>
+            <div class="metric-row"><span>Ano letivo</span><strong>{{ class_group.school_year }}</strong></div>
+            <div class="metric-row"><span>Professor responsavel</span><strong>{{ class_group.responsible_teacher|default:'-' }}</strong></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card__header">
+            <h3>Alunos da turma</h3>
+            <div class="quick-actions">
+                <a href="{% url 'schools:student_create' %}?class_group={{ class_group.pk }}" class="btn btn--secondary">Novo aluno</a>
+                <a href="{% url 'schools:student_import' %}?class_group={{ class_group.pk }}&next={% url 'schools:classgroup_detail' class_group.pk %}" class="btn btn--primary">Importar alunos</a>
+            </div>
+        </div>
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Matricula</th>
+                        <th>Status</th>
+                        <th>Acoes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in class_group.students.all %}
+                        <tr>
+                            <td>{{ student.name }}</td>
+                            <td>{{ student.registration_number|default:'-' }}</td>
+                            <td>{% if student.is_active %}Ativo{% else %}Inativo{% endif %}</td>
+                            <td>
+                                <a href="{% url 'schools:student_update' student.pk %}">Editar</a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4">Nenhum aluno cadastrado nessa turma.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Turmas | Corretor de Gabarito{% endblock %}
+{% block page_title %}Turmas{% endblock %}
+{% block page_subtitle %}Organize as turmas e acompanhe seus alunos{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card__header">
+        <h3>Lista de turmas</h3>
+        <a href="{% url 'schools:classgroup_create' %}" class="btn btn--primary">Nova turma</a>
+    </div>
+    <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Turma</th>
+                    <th>Série</th>
+                    <th>Turno</th>
+                    <th>Ano</th>
+                    <th>Escola</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for class_group in class_groups %}
+                    <tr>
+                        <td>{{ class_group.name }}</td>
+                        <td>{{ class_group.get_grade_level_display }}</td>
+                        <td>{{ class_group.get_shift_display }}</td>
+                        <td>{{ class_group.school_year }}</td>
+                        <td>{{ class_group.school.name }}</td>
+                        <td>
+                            <a href="{% url 'schools:classgroup_detail' class_group.pk %}">Ver detalhes</a> |
+                            <a href="{% url 'schools:classgroup_update' class_group.pk %}">Editar</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6">Nenhuma turma cadastrada.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Correção | {{ exam.title }}{% endblock %}
+{% block page_title %}Correção da prova{% endblock %}
+{% block page_subtitle %}Selecione um aluno da turma {{ exam_application.class_group.name }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card__header">
+        <div>
+            <h3>{{ exam.title }}</h3>
+            <p class="topbar__subtitle">
+                {{ exam_application.class_group.name }} • {{ exam_application.class_group.get_grade_level_display }}
+            </p>
+        </div>
+        <a href="{% url 'exams:exam_report' exam.pk %}" class="btn btn--secondary">Ver relatório</a>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Aluno</th>
+                    <th>Turma</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                    <tr>
+                        <td>{{ student.name }}</td>
+                        <td>{{ exam_application.class_group.name }}</td>
+                        <td>
+                            <a href="{% url 'exams:correction_student' exam_application.pk student.pk %}" class="btn btn--primary">
+                                Corrigir
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3">Nenhum aluno ativo nessa turma.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

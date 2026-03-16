@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Escolas | Corretor de Gabarito{% endblock %}
+{% block page_title %}Escolas{% endblock %}
+{% block page_subtitle %}Gerencie as instituições cadastradas no sistema{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card__header">
+        <h3>Lista de escolas</h3>
+        <a href="{% url 'schools:school_create' %}" class="btn btn--primary">Nova escola</a>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Cidade</th>
+                    <th>Estado</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for school in schools %}
+                    <tr>
+                        <td>{{ school.name }}</td>
+                        <td>{{ school.city|default:'-' }}</td>
+                        <td>{{ school.state|default:'-' }}</td>
+                        <td>{% if school.is_active %}Ativa{% else %}Inativa{% endif %}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4">Nenhuma escola cadastrada.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
