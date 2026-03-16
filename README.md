@@ -1,49 +1,49 @@
 # Corretor de Gabarito
 
-Sistema web em Django para uso pedagogico local, focado em cadastro de escolas, turmas, alunos e provas, com correcao manual, relatorios por prova e por turma, alem de exportacao em Excel.
+Sistema web em Django para uso **pedagógico local**, focado em cadastro de escolas, turmas, alunos e provas, com **correção manual**, **relatórios por prova e por turma**, além de **exportação em Excel**.
 
-## Visao geral
+## Visão geral
 
-O projeto foi pensado desde o inicio para rodar localmente com simplicidade. Por isso, a configuracao padrao usa `SQLite`, o que reduz instalacao, manutencao e custo operacional para uso em escola, secretaria ou computador pessoal.
+O projeto foi pensado desde o início para rodar localmente com simplicidade. Por isso, a configuração padrão usa `SQLite`, o que reduz instalação, manutenção e custo operacional para uso em escola, secretaria ou computador pessoal.
 
-Mesmo assim, o projeto ja ficou preparado para uso com `PostgreSQL` por variaveis de ambiente, caso alguem queira evoluir para um cenario com mais usuarios, deploy em servidor ou banco dedicado.
+Mesmo assim, o projeto já ficou preparado para uso com `PostgreSQL` por variáveis de ambiente, caso alguém queira evoluir para um cenário com mais usuários, deploy em servidor ou banco dedicado.
 
 ## O que o sistema faz hoje
 
-- autenticacao de usuarios
+- autenticação de usuários
 - dashboard inicial com indicadores gerais
 - cadastro de escolas
-- cadastro de turmas com serie, turno, ano letivo e professor responsavel
+- cadastro de turmas com série, turno, ano letivo e professor responsável
 - cadastro de alunos individualmente
-- importacao de alunos por CSV/TXT
-- importacao de alunos diretamente a partir da tela da turma
+- importação de alunos por CSV/TXT
+- importação de alunos diretamente a partir da tela da turma
 - listagem de alunos com filtros por escola, ano letivo e turma
 - cadastro de provas
-- associacao de uma mesma prova a varias turmas
-- correcao manual por aluno
-- relatorio geral por prova
-- relatorio filtrado por turma dentro da prova
-- exportacao em Excel dos resultados detalhados
-- exportacao em Excel do resumo por questao
+- associação de uma mesma prova a várias turmas
+- correção manual por aluno
+- relatório geral por prova
+- relatório filtrado por turma dentro da prova
+- exportação em Excel dos resultados detalhados
+- exportação em Excel do resumo por questão
 - tema claro e escuro
 
 ## Stack atual
 
 - Python 3.12+
 - Django 5
-- SQLite como banco padrao
+- SQLite como banco padrão
 - PostgreSQL opcional via `.env`
-- OpenPyXL para exportacao Excel
-- WhiteNoise para servir arquivos estaticos
-- python-decouple para configuracao por ambiente
+- OpenPyXL para exportação Excel
+- WhiteNoise para servir arquivos estáticos
+- python-decouple para configuração por ambiente
 
 ## Estrutura resumida
 
 ```text
 apps/
-  accounts/   # autenticacao
+  accounts/   # autenticação
   schools/    # escolas, turmas e alunos
-  exams/      # provas, aplicacoes, correcao e relatorios
+  exams/      # provas, aplicações, correção e relatórios
 config/       # settings, urls e bootstrap do Django
 templates/    # interfaces HTML
 static/       # CSS e JavaScript
@@ -58,9 +58,9 @@ O projeto usa `.env` para:
 - `DEBUG`
 - `ALLOWED_HOSTS`
 - `TIME_ZONE`
-- definicao do banco (`SQLite` ou `PostgreSQL`)
+- definição do banco (`SQLite` ou `PostgreSQL`)
 
-### Exemplo de configuracao local com SQLite
+### Exemplo de configuração local com SQLite
 
 ```env
 SECRET_KEY=sua-chave
@@ -71,7 +71,7 @@ DB_ENGINE=sqlite
 DB_SQLITE_NAME=db.sqlite3
 ```
 
-### Exemplo de configuracao com PostgreSQL
+### Exemplo de configuração com PostgreSQL
 
 ```env
 SECRET_KEY=sua-chave
@@ -89,51 +89,51 @@ DB_PORT=5432
 ## Como rodar localmente
 
 1. Crie e ative um ambiente virtual.
-2. Instale as dependencias com `pip install -r requirements.txt`.
+2. Instale as dependências com `pip install -r requirements.txt`.
 3. Copie `.env.example` para `.env`.
 4. Rode as migrations com `python manage.py migrate`.
-5. Crie um usuario administrador com `python manage.py createsuperuser`.
+5. Crie um usuário administrador com `python manage.py createsuperuser`.
 6. Inicie o projeto com `python manage.py runserver`.
 
-## Testes e verificacoes
+## Testes e verificações
 
-- Validacao basica do Django: `python manage.py check`
+- Validação básica do Django: `python manage.py check`
 - Testes automatizados: `python manage.py test`
 
-## Decisoes de projeto
+## Decisões de projeto
 
-- `SQLite` foi mantido como padrao por coerencia com a proposta local do sistema.
-- `PostgreSQL` ficou como opcao de crescimento, nao como obrigatoriedade.
-- A exportacao implementada hoje e em Excel, que atende melhor o uso administrativo e pedagogico imediato.
-- O foco atual esta em fluxo funcional e simplicidade operacional, nao em arquitetura de nuvem.
+- `SQLite` foi mantido como padrão por coerência com a proposta local do sistema.
+- `PostgreSQL` ficou como opção de crescimento, não como obrigatoriedade.
+- A exportação implementada hoje é em Excel, que atende melhor o uso administrativo e pedagógico imediato.
+- O foco atual está em fluxo funcional e simplicidade operacional, não em arquitetura de nuvem.
 
-## Pontos que foram organizados nesta revisao
+## Pontos que foram organizados nesta revisão
 
-- configuracao do banco alinhada ao `.env`
+- configuração do banco alinhada ao `.env`
 - `ALLOWED_HOSTS` voltou a ser controlado por ambiente
 - README atualizado para refletir o estado real do projeto
-- dependencias sem uso direto removidas do `requirements.txt`
-- testes basicos adicionados para filtros de alunos e relatorio por turma
+- dependências sem uso direto removidas do `requirements.txt`
+- testes básicos adicionados para filtros de alunos e relatório por turma
 
-## Ideias de implementacao futura
+## Ideias de implementação futura
 
-- destacar item ativo na barra de navegacao
-- pagina de configuracoes do sistema pela interface
-- painel com metricas por escola, serie e turma
-- exportacao PDF de relatorios
-- importacao de alunos com colunas adicionais como matricula e observacoes
-- lancamento de gabarito oficial por questao
-- comparativo entre aplicacoes da mesma prova ao longo do tempo
-- trilha de auditoria de correcoes
-- permissoes por perfil de usuario
+- destacar item ativo na barra de navegação
+- página de configurações do sistema pela interface
+- painel com métricas por escola, série e turma
+- exportação PDF de relatórios
+- importação de alunos com colunas adicionais como matrícula e observações
+- lançamento de gabarito oficial por questão
+- comparativo entre aplicações da mesma prova ao longo do tempo
+- trilha de auditoria de correções
+- permissões por perfil de usuário
 - deploy com PostgreSQL em ambiente compartilhado
 
-## Observacao importante
+## Observação importante
 
-Este projeto foi construindo com foco claro em uso local. Se voce pretende publicar em producao para varios usuarios, vale configurar:
+Este projeto foi construído com foco claro em uso local. Se você pretende publicar em produção para vários usuários, vale configurar:
 
 - `DEBUG=False`
 - `ALLOWED_HOSTS` corretamente
 - `PostgreSQL`
-- backup automatico do banco
-- politicas de acesso e seguranca
+- backup automático do banco
+- políticas de acesso e segurança
